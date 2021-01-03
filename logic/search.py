@@ -17,7 +17,6 @@ def search(search_setting):
     ads = soup.find_all("a")
 
     a_dict = {}
-
     ad_class = ""
     for ad in ads:
         try:

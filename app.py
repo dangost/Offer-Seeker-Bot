@@ -1,4 +1,6 @@
 import telebot
+
+from db.app.config import bot_key
 from logic.search import search
 import time
 from threading import *
@@ -8,7 +10,7 @@ from models.search_settings import SearchSetting
 keyboard1 = telebot.types.ReplyKeyboardMarkup()
 keyboard1.row('Зарегистрироваться и ввеси параметры поиска', 'Пока')
 
-bot = telebot.TeleBot("854343929:AAEEaQ5_b_BjRHW29kmvY4W7ASa8yHbB8EQ", parse_mode=None)
+bot = telebot.TeleBot(bot_key, parse_mode=None)
 users = []
 
 search_settings_list = []
