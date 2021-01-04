@@ -14,6 +14,7 @@ bot = telebot.TeleBot(bot_key, parse_mode=None)
 users = []
 
 search_settings_list = []
+keys = ["INUlItqvya", "LvPcGWZIMA", "weAEpMYozh"]
 
 
 def searching(search_settings):
@@ -33,8 +34,7 @@ s1.start()
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, "Пока что бот способен только заниматься рассылкой в разделе электроники\n"
-                                      "Настройте параметры поиска или выйдите", reply_markup=keyboard1)
+    bot.send_message(message.chat.id, "Для начала работы введите ключ (beta)")
 
 
 @bot.message_handler(commands=['exit'])
@@ -44,7 +44,7 @@ def exit_message(message):
 
 @bot.message_handler(commands=['help'])
 def help_user(message):
-    print("Help")
+    print("help")
     if message.chat.id in users:
         bot.send_message(message.chat.id, "Параметры поиска вводятся начиная с символов двоеточия (;;).\n"
                          "Далее через проблем пишется название товара (Телевизор)\n"
@@ -69,6 +69,10 @@ def send_text(message):
             bot.send_message(message.chat.id, "Вы успешно подписались на рассылку")
         except IndexError:
             bot.send_message(message.chat.id, "Проверьте корректность ввода")
+
+    elif message.text in keys:
+
+
 
 
 bot.polling()
