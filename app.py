@@ -71,6 +71,7 @@ def send_text(message):
             bot.send_message(message.chat.id, "Проверьте корректность ввода")
 
     elif message.text in keys:
+        pass
 
 
 
