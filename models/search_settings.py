@@ -1,6 +1,10 @@
 class SearchSetting:
-    def __init__(self, chat_id, name, price):
+    def __init__(self, chat_id):
         self.chat_id = chat_id,
-        self.name = name
-        self.price = price
+        self.name = ""
+        self.price = ""
         self.links = []
+        self.region = None
+        self.cat = None
+        self.is_searchable = False
+

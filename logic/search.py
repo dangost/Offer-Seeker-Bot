@@ -9,7 +9,7 @@ ad_in_page = 42
 
 def search(search_setting):
     proxy = {"http": "37.17.9.28:44938"}
-    html = requests.get("https://www.kufar.by/listings?prn=5000&rgn=7", proxies=proxy).text
+    html = requests.get(f"https://www.kufar.by/listings?prn={search_setting.cat}&rgn={search_setting.region}", proxies=proxy).text
 
     soup = BeautifulSoup(html, 'html.parser')
     soup.prettify()
