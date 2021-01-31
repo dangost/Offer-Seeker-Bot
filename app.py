@@ -64,35 +64,61 @@ def send_text(message):
     if message.text in keys and user is None:
         bot.send_message(message.chat.id, "Вы успешно зарегистрировались")
         user = User(message.chat.id, message.text)
+        keys.remove(message.text)
         user.reg_step += 1
         user.search_settings.append(SearchSetting(message.chat.id))
         users.append(user)
         bot.send_message(message.chat.id, "Регистрируем ваш первый поисковой запрос. Для этого выберите свой регион",
                          reply_markup=regions_keyboard)
 
-    elif user.reg_step == 1 and message.text in regions.values():
+    elif user is not None and user.reg_step == 1 and message.text in regions.values():
         user.reg_step += 1
-        user.search_settings[0].region = next(key for key in regions.keys() if regions[key] == message.text)
+        user.search_settings[-1].region = next(key for key in regions.keys() if regions[key] == message.text)
         bot.send_message(message.chat.id, "Вы успешно выбрали регион. \nТеперь выберите категорию",
                          reply_markup=cats_keyboard)
 
-    elif user.reg_step == 2 and message.text in categories.values():
+    elif user is not None and user.reg_step == 2 and message.text in categories.values():
         user.reg_step += 1
-        user.search_settings[0].cat = next(key for key in categories.keys() if categories[key] == message.text)
+        user.search_settings[-1].cat = next(key for key in categories.keys() if categories[key] == message.text)
         bot.send_message(message.chat.id, "Отлично, теперь введите название товара, по которому будем искать")
 
-    elif user.reg_step == 3:
+    elif user is not None and user.reg_step == 3:
         user.reg_step += 1
-        user.search_settings[0].name = message.text
+        user.search_settings[-1].name = message.text
         bot.send_message(message.chat.id, "Теперь введите максимальную цену, за которую готовы преобрести товар")
 
-    elif user.reg_step == 4:
+    elif user is not None and user.reg_step == 4:
         user.reg_step += 1
-        user.search_settings[0].price = message.text
+        user.search_settings[-1].price = message.text
 
         bot.send_message(message.chat.id, "Ваш поисковой запрос готов \n"
                                           "Для удаления и создания новых запросов используйте команду /requests")
-        user.search_settings[0].is_searchable = True
+        user.search_settings[-1].is_searchable = True
+
+    elif user is not None and user.reg_step == 5 and message.text == "/requests":
+        sender_message = "Id\tНазвание\tЦена\n"
+        for i in range(len(user.search_settings)):
+            sender_message += f"{i}\t{user.search_settings[i].to_string()}\n"
+        if len(user.search_settings) == 0:
+            sender_message = f"У вас нет запросов на данный момент\n"
+        sender_message += "\nВы можете создать новый или удалить запрос через /create и /delete [id]"
+        bot.send_message(message.chat.id, sender_message)
+
+    elif user is not None and user.reg_step == 5 and message.text.startswith("/delete"):
+        # noinspection PyBroadException
+        try:
+            request_id = int(message.text.split('/delete ')[1])
+            request = user.search_settings[request_id]
+            user.search_settings.remove(user.search_settings[request_id])
+            bot.send_message(message.chat.id, f"Запрос {request.to_string()} был успешно удалён")
+        except Exception:
+            bot.send_message(message.chat.id, "Произошла ошибка на сервере, проверьте праввильность ввода")
+
+    elif user is not None and user.reg_step == 5 and message.text == "/create":
+        user.reg_step = 1
+        user.search_settings.append(SearchSetting(message.chat.id))
+        bot.send_message(message.chat.id, "Регистрируем новый поисковой запрос. Для этого выберите свой регион",
+                         reply_markup=regions_keyboard)
 
 
 bot.polling()

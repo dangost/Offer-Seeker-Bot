@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import requests
-import time
 
 from models.item import Item
 
@@ -48,13 +47,12 @@ def search(search_setting):
             continue
 
     found = []
-    print(f"Setting: {search_setting.name} {search_setting.price}")
+    print(f"Setting: {search_setting.to_string()}")
     for item in items:
         if item.name.lower().find(search_setting.name.lower()) != -1:
             pr = item.price.split()
             if pr[0] == "Договорная" or float(pr[0]) <= float(search_setting.price):
                 if item.link not in search_setting.links:
                     found.append(item)
-    time.sleep(3)
     return found
 

@@ -8,3 +8,5 @@ class SearchSetting:
         self.cat = None
         self.is_searchable = False
 
+    def to_string(self):
+        return f"{self.name}\t{self.price}"
