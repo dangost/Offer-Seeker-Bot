@@ -34,7 +34,7 @@ bot = telebot.TeleBot(bot_key, parse_mode=None)
 users = []
 
 search_settings_list = []
-keys = ["INUlItqvya", "LvPcGWZIMA", "weAEpMYozh"]
+keys = ["INUlItqvya", "LvPcGWZIMA", "weAEpMYozh", '1', '2']
 
 
 def searching(searchers):
@@ -97,7 +97,12 @@ def send_text(message):
 
     elif user is not None and user.reg_step == 4:
         user.reg_step += 1
-        user.search_settings[-1].price = message.text
+        try:
+            price = float(message.text)
+        except ValueError:
+            bot.send_message(message.chat.id, "Вы ввели неверное значение")
+            return
+        user.search_settings[-1].price = price
 
         bot.send_message(message.chat.id, "Ваш поисковой запрос готов \n"
                                           "Для удаления и создания новых запросов используйте команду /requests")
@@ -106,10 +111,11 @@ def send_text(message):
     elif user is not None and user.reg_step == 5 and message.text == "/requests":
         sender_message = "Id\tНазвание\tЦена\n"
         for i in range(len(user.search_settings)):
-            sender_message += f"{i}\t{user.search_settings[i].to_string()}\n"
+            sender_message += f"{i}\t{user.search_settings[i].to_string()} {'✅' if user.search_settings[i].is_searchable else '❌'}\n"
         if len(user.search_settings) == 0:
             sender_message = f"У вас нет запросов на данный момент\n"
-        sender_message += "\nВы можете создать новый или удалить запрос через /create и /delete [id]"
+        sender_message += "\nВы можете создать новый или удалить запрос через /create и /delete [id]\n" \
+                          "А также остановить (/stopRequest [id]) и восстановить /resumeRequest [id])"
         bot.send_message(message.chat.id, sender_message)
 
     elif user is not None and user.reg_step == 5 and message.text.startswith("/delete"):
@@ -120,7 +126,27 @@ def send_text(message):
             user.search_settings.remove(user.search_settings[request_id])
             bot.send_message(message.chat.id, f"Запрос {request.to_string()} был успешно удалён")
         except Exception:
-            bot.send_message(message.chat.id, "Произошла ошибка на сервере, проверьте праввильность ввода")
+            bot.send_message(message.chat.id, "Произошла ошибка на сервере, проверьте правильность ввода")
+
+    elif user is not None and user.reg_step == 5 and message.text.startswith("/stopRequest"):
+        # noinspection PyBroadException
+        try:
+            request_id = int(message.text.split('/stopRequest ')[1])
+            request = user.search_settings[request_id]
+            user.search_settings[request_id].is_searchable = False
+            bot.send_message(message.chat.id, f"Запрос {request.to_string()} был успешно остановлен")
+        except Exception:
+            bot.send_message(message.chat.id, "Произошла ошибка на сервере, проверьте правильность ввода")
+
+    elif user is not None and user.reg_step == 5 and message.text.startswith("/resumeRequest"):
+        # noinspection PyBroadException
+        try:
+            request_id = int(message.text.split('/resumeRequest ')[1])
+            request = user.search_settings[request_id]
+            user.search_settings[request_id].is_searchable = True
+            bot.send_message(message.chat.id, f"Запрос {request.to_string()} был успешно запущен")
+        except Exception:
+            bot.send_message(message.chat.id, "Произошла ошибка на сервере, проверьте правильность ввода")
 
     elif user is not None and user.reg_step == 5 and message.text == "/create":
         user.reg_step = 1
