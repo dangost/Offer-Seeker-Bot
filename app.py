@@ -34,7 +34,7 @@ bot = telebot.TeleBot(bot_key, parse_mode=None)
 users = []
 
 search_settings_list = []
-keys = ["INUlItqvya", "LvPcGWZIMA", "weAEpMYozh", '1', '2']
+keys = ["INUlItqvya", "LvPcGWZIMA", "weAEpMYozh"]
 
 
 def searching(searchers):
