@@ -1,6 +1,7 @@
 import telebot
 
 from core.key import bot_key
+from logic.password_generate import get_pass
 from logic.search import search
 import time
 from threading import *
@@ -56,6 +57,13 @@ s1.start()
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, "Для начала работы введите ключ (beta)")
+
+
+@bot.message_handler(commands=['36ce58394c734dac9132c7de704b1ca43c93d3fd93c8179e38272b68821da6a3'])
+def create_licence(message):
+    lic = get_pass()
+    keys.append(lic)
+    bot.send_message(message.chat.id, f"Length: {len(keys)}\nNew: {lic}")
 
 
 @bot.message_handler(content_types=['text'])
